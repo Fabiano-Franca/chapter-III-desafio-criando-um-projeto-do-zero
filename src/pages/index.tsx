@@ -6,6 +6,7 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { FiCalendar, FiUser } from "react-icons/fi";
+import { RichText } from 'prismic-dom';
 
 interface Post {
   uid?: string;
@@ -26,30 +27,60 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home() {
+export default function Home({ postsPagination }: HomeProps) {
+
+  console.log(JSON.stringify(postsPagination, null, 2))
+
   return(
     <>
       <main className={styles.contentContainer}>
-        <section className={styles.post}>
-          <h1>Como utilizar Hooks</h1>
-          <h5>Pensando em sincronização em vez de ciclos de vida.</h5>
 
-          <div>
-            <FiCalendar className={styles.fi}/>
-            <span>15 Mar 2021</span>
-            
-            <FiUser className={styles.fi}/>
-            <span>Joseph Oliveira</span>
-          </div>
-        </section>
+        {/* {postsPagination.results.map(post => {
+          <section key={post.uid} className={styles.post}>
+            <h1>{post.data.title}</h1>
+            <h5>{post.data.subtitle}</h5>
+
+            <div>
+              <FiCalendar className={styles.fi}/>
+              <span>15 Mar 2021</span>
+
+              <FiUser className={styles.fi}/>
+              <span>{post.data.author}</span>
+            </div>
+          </section>
+        })} */}
       </main>
     </>
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient({});
-//   // const postsResponse = await prismic.getByType(TODO);
+export const getStaticProps = async () => {
+  const prismic = getPrismicClient({});
 
-//   // TODO
-// };
+  const postsResponse = await prismic.getByType('posts');
+
+  //console.log(JSON.stringify(postsResponse, null, 2))
+
+  const posts = postsResponse.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: new Date(post.data.first_publication_date).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
+      }
+    }
+  })
+
+  return {
+    props: {
+      next_page: postsResponse.next_page,
+      results: posts
+    } as PostPagination
+  }
+};
