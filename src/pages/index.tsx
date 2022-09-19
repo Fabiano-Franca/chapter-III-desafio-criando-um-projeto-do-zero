@@ -6,7 +6,7 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { FiCalendar, FiUser } from "react-icons/fi";
-import { RichText } from 'prismic-dom';
+import { useEffect, useState } from 'react';
 
 interface Post {
   uid?: string;
@@ -29,57 +29,95 @@ interface HomeProps {
 
 export default function Home({ postsPagination }: HomeProps) {
 
-  console.log(JSON.stringify(postsPagination, null, 2))
+  const [postFetch, setPostFetch] = useState<PostPagination>({} as PostPagination);
+
+  function handleMorePosts(next_page: string) {
+    fetch(`${next_page}`)
+      .then(response => response.json())
+      .then(data => setPostFetch(data))
+  }
+
+  console.log(postFetch)
 
   return(
     <>
       <main className={styles.contentContainer}>
+        {!postFetch ?
+          <>
+            { postFetch.results.map(post => (
+              <section key={post.uid} className={styles.post}>
+                <h1>{post.data.title}</h1>
+                <h5>{post.data.subtitle}</h5>
 
-        {/* {postsPagination.results.map(post => {
-          <section key={post.uid} className={styles.post}>
-            <h1>{post.data.title}</h1>
-            <h5>{post.data.subtitle}</h5>
+                <div>
+                  <FiCalendar className={styles.fi}/>
+                  <span>
+                    {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </span>
 
-            <div>
-              <FiCalendar className={styles.fi}/>
-              <span>15 Mar 2021</span>
+                  <FiUser className={styles.fi}/>
+                  <span>{post.data.author}</span>
+                </div>
+              </section>
+            ))}
+            { postFetch.next_page &&
+              <button
+                onClick={() => handleMorePosts(postsPagination.next_page)}
+              >
+                Carregar mais posts
+              </button>
+            }
+          </>
+         :
+          <>
+            { postsPagination.results.map(post => (
+                <section key={post.uid} className={styles.post}>
+                  <h1>{post.data.title}</h1>
+                  <h5>{post.data.subtitle}</h5>
 
-              <FiUser className={styles.fi}/>
-              <span>{post.data.author}</span>
-            </div>
-          </section>
-        })} */}
+                  <div>
+                    <FiCalendar className={styles.fi}/>
+                    <span>
+                      {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </span>
+
+                    <FiUser className={styles.fi}/>
+                    <span>{post.data.author}</span>
+                  </div>
+                </section>
+            ))}
+            { postsPagination.next_page &&
+              <button
+                onClick={() => handleMorePosts(postsPagination.next_page)}
+              >
+                Carregar mais posts
+              </button>
+            }
+          </>
+        }
       </main>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps<PostPagination> = async () => {
+export const getStaticProps = async () => {
   const prismic = getPrismicClient({});
 
-  const postsResponse = await prismic.getByType('posts');
-
-  //console.log(JSON.stringify(postsResponse, null, 2))
-
-  const posts = postsResponse.results.map(post => {
-    return {
-      uid: post.uid,
-      first_publication_date: new Date(post.data.first_publication_date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      }),
-      data: {
-        title: post.data.title,
-        subtitle: post.data.subtitle,
-        author: post.data.author,
-      }
-    }
-  })
+  const postsResponse = await prismic.getByType('posts', {
+    pageSize: 4
+  });
 
   return {
     props: {
-      posts
+      postsPagination: postsResponse
     }
   }
 };
