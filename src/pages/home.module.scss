@@ -1,1 +1,66 @@
-// TODO
+.contentContainer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: calc(100vh - 5rem); //Alinha o objeto verticalmente com o desconto do header
+
+  //display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post {
+  margin-bottom: 3rem;
+
+  h1{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.74rem;
+    line-height: 2.125rem;
+    margin-bottom: 0.5rem;
+
+    text-align: justify;
+    letter-spacing: -0.031rem;
+
+    color: #F8F8F8;
+  }
+
+  h5{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1.2rem;
+    line-height: 1.3rem;
+    margin-bottom: 1.5rem;
+
+    text-align: justify;
+
+    color: #D7D7D7;
+  }
+
+  div {
+
+    display: flex;
+
+    .fi{
+      color: #BBBBBB;
+    }
+
+    span{
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 0.75rem;
+      line-height: 1.063rem;
+      margin-left: 0.5rem;
+
+      color: #BBBBBB;
+    }
+
+    > span {
+      margin-right: 1.5rem;
+    }
+
+  }
+}
