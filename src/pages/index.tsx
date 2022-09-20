@@ -6,7 +6,8 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { FiCalendar, FiUser } from "react-icons/fi";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 
 interface Post {
   uid?: string;
@@ -29,82 +30,57 @@ interface HomeProps {
 
 export default function Home({ postsPagination }: HomeProps) {
 
-  const [postFetch, setPostFetch] = useState<PostPagination>({} as PostPagination);
+  const [nextPage, setNextPage] = useState(postsPagination.next_page);
+  const [results, setResults] = useState<Post[]>(postsPagination.results);
 
-  function handleMorePosts(next_page: string) {
-    fetch(`${next_page}`)
+  function handleMorePosts() {
+
+    fetch(`${nextPage}`)
       .then(response => response.json())
-      .then(data => setPostFetch(data))
+      .then(data => {
+        setNextPage(data.next_page);
+
+        setResults([...results, ...data.results]);
+      })
+
   }
 
-  console.log(postFetch)
+  console.log(results)
 
   return(
-    <>
-      <main className={styles.contentContainer}>
-        {!postFetch ?
-          <>
-            { postFetch.results.map(post => (
-              <section key={post.uid} className={styles.post}>
-                <h1>{post.data.title}</h1>
-                <h5>{post.data.subtitle}</h5>
+    <main className={styles.contentContainer}>
+      { results.map(post => (
+        <Link href={`/post/${post.uid}`} >
+          <section key={post.uid} className={styles.post}>
+            <h1>{post.data.title}</h1>
+            <h5>{post.data.subtitle}</h5>
 
-                <div>
-                  <FiCalendar className={styles.fi}/>
-                  <span>
-                    {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  </span>
+            <div>
+              <FiCalendar className={styles.fi}/>
+              <span>
+                {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </span>
 
-                  <FiUser className={styles.fi}/>
-                  <span>{post.data.author}</span>
-                </div>
-              </section>
-            ))}
-            { postFetch.next_page &&
-              <button
-                onClick={() => handleMorePosts(postsPagination.next_page)}
-              >
-                Carregar mais posts
-              </button>
-            }
-          </>
-         :
-          <>
-            { postsPagination.results.map(post => (
-                <section key={post.uid} className={styles.post}>
-                  <h1>{post.data.title}</h1>
-                  <h5>{post.data.subtitle}</h5>
+              <FiUser className={styles.fi}/>
+              <span>{post.data.author}</span>
+            </div>
+          </section>
+        </Link>
+      ))}
 
-                  <div>
-                    <FiCalendar className={styles.fi}/>
-                    <span>
-                      {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </span>
+      {nextPage !== null &&
+        <button
+          onClick={handleMorePosts}
+        >
+          Carregar mais posts
+        </button>
+      }
 
-                    <FiUser className={styles.fi}/>
-                    <span>{post.data.author}</span>
-                  </div>
-                </section>
-            ))}
-            { postsPagination.next_page &&
-              <button
-                onClick={() => handleMorePosts(postsPagination.next_page)}
-              >
-                Carregar mais posts
-              </button>
-            }
-          </>
-        }
-      </main>
-    </>
+    </main>
   );
 }
 
