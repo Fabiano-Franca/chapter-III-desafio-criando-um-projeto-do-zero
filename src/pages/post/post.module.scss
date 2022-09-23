@@ -7,9 +7,7 @@
   margin-top: 5rem;
   margin: 0 auto;
   padding: 0 2rem;
-  height: 100vh; //Alinha o objeto verticalmente com o desconto do header
 
-  //display: flex;
   align-items: center;
   justify-content: center;
 
@@ -19,13 +17,50 @@
     font-weight: 700;
     font-size: 3rem;
     line-height: 3.5rem;
-    /* identical to box height */
-
     letter-spacing: -0.5px;
-
-    /* Heading */
-
     color: #F8F8F8;
+    margin-bottom: 1.5rem;
+  }
+
+  address {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #BBBBBB;
+
+    margin-bottom: 4rem;
+
+    span, time {
+      margin-left: 0.5rem;
+    }
+
+    > span, time {
+      margin-right: 1.5rem;
+    }
+  }
+
+  article {
+    font-family: 'Inter';
+    font-style: normal;
+    line-height: 140%;
+    text-align: justify;
+
+    h2 {
+      font-weight: 700;
+      font-size: 2.25rem;
+      line-height: 140%;
+      color: #F8F8F8;
+      margin-bottom: 2.25rem;
+    }
+
+    p {
+      font-weight: 400;
+      font-size: 1.25rem;
+      color: #D7D7D7;
+      margin-bottom: 1.25rem;
+    }
   }
 
 }

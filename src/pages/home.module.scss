@@ -2,11 +2,12 @@
   max-width: 720px;
   margin: 0 auto;
   padding: 0 2rem;
-  height: 100vh; //Alinha o objeto verticalmente com o desconto do header
+  //height: 100vh; //Alinha o objeto verticalmente com o desconto do header
 
   //display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 
   button {
     font-family: 'Inter';
@@ -14,6 +15,8 @@
     font-weight: 600;
     font-size: 18px;
     line-height: 22px;
+    cursor: pointer;
+    border: 0;
 
     text-align: justify;
 
