@@ -8,6 +8,8 @@ import styles from './home.module.scss';
 import { FiCalendar, FiUser } from "react-icons/fi";
 import { useState } from 'react';
 import Link from 'next/link';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface Post {
   uid?: string;
@@ -31,7 +33,18 @@ interface HomeProps {
 export default function Home({ postsPagination }: HomeProps) {
 
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
-  const [results, setResults] = useState<Post[]>(postsPagination.results);
+  const [results, setResults] = useState<Post[]>(postsPagination.results.map(result => (
+    {
+      ...result,
+      first_publication_date: format(
+        new Date(result.first_publication_date),
+        "dd MMM' 'yyyy",
+        {
+          locale: ptBR,
+        }
+      )
+    }
+  )));
 
   function handleMorePosts() {
 
@@ -56,11 +69,7 @@ export default function Home({ postsPagination }: HomeProps) {
             <div>
               <FiCalendar className={styles.fi}/>
               <span>
-                {new Date(post.first_publication_date).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric'
-                })}
+                {post.first_publication_date}
               </span>
 
               <FiUser className={styles.fi}/>
